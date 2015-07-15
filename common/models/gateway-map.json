@@ -1,0 +1,48 @@
+{
+  "name": "GatewayMap",
+  "base": "Definition",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "defaultConfigFile": "policy-config.json",
+    "configFiles": [
+      "policy-config.json",
+      "policy-config.*.json"
+    ]
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "id": true,
+      "json": false
+    },
+    "name": {
+      "type": "string"
+    },
+    "verb": {
+      "type": "string"
+    },
+    "endpoint": {
+      "type": "string"
+    },
+    "facetName": {
+      "type": "string",
+      "default": "server",
+      "json": false
+    }
+  },
+  "validations": [],
+  "relations": {
+    "pipeline": {
+      "type": "belongsTo",
+      "model": "Pipeline"
+    },
+    "facet": {
+      "type": "belongsTo",
+      "model": "Facet",
+      "foreignKey": "facetName"
+    }
+  },
+  "acls": [],
+  "methods": []
+}

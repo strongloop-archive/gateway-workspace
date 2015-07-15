@@ -1,0 +1,15 @@
+{
+  "name": "ReverseProxy",
+  "base": "Policy",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "targetURL": "string"
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

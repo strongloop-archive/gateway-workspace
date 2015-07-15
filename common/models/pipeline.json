@@ -1,0 +1,27 @@
+{
+  "name": "Pipeline",
+  "base": "Definition",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "id": true,
+      "json": false
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "policies": {
+      "type": "referencesMany",
+      "model": "Policy"
+    }
+  },
+  "acls": [],
+  "methods": []
+}
