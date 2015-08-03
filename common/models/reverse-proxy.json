@@ -1,5 +1,5 @@
 {
-  "name": "ReverseProxy",
+  "name": "ReverseProxyPolicy",
   "base": "Policy",
   "idInjection": true,
   "options": {

@@ -1,5 +1,5 @@
 {
-  "name": "Metrics",
+  "name": "MetricsPolicy",
   "base": "Policy",
   "idInjection": true,
   "options": {

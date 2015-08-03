@@ -8,6 +8,10 @@
       "./models"
     ]
   },
+  "ConfigFile": {
+    "dataSource": "db",
+    "public": false
+  },
   "Endpoint": {
     "dataSource": "db",
     "public": true
@@ -28,19 +32,19 @@
     "dataSource": "db",
     "public": true
   },
-  "OAuth2": {
+  "RateLimitingPolicy": {
     "dataSource": "db",
     "public": true
   },
-  "RateLimiting": {
+  "MetricsPolicy": {
     "dataSource": "db",
     "public": true
   },
-  "Metrics": {
+  "ReverseProxyPolicy": {
     "dataSource": "db",
     "public": true
   },
-  "ReverseProxy": {
+  "AuthPolicy": {
     "dataSource": "db",
     "public": true
   }

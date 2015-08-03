@@ -1,6 +1,7 @@
-var app = require('../../');
+var app;
 
 module.exports = function(ReverseProxy) {
+  app = ReverseProxy.app;
   app.once('ready', function() {
     ready(ReverseProxy);
   });
