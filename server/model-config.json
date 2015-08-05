@@ -8,18 +8,6 @@
       "./models"
     ]
   },
-  "ConfigFile": {
-    "dataSource": "db",
-    "public": false
-  },
-  "Endpoint": {
-    "dataSource": "db",
-    "public": true
-  },
-  "EndpointGroup": {
-    "dataSource": "db",
-    "public": true
-  },
   "Policy": {
     "dataSource": "db",
     "public": true

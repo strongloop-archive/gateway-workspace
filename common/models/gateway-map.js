@@ -1,7 +1,33 @@
+var path = require('path');
+var debug = require('debug')('gateway-workspace:models:gateway-map');
+
 module.exports = function(GatewayMap) {
   GatewayMap.getUniqueId = function(data) {
     return data.name || data.id;
   };
+
+  /**
+   * Load all policy-config instances from cache
+   * @param cache
+   */
+  function loadFromCache(cache) {
+    var Pipeline = GatewayMap.app.models.Pipeline;
+    var Policy = GatewayMap.app.models.Policy;
+
+    var maps = GatewayMap.allFromCache(cache);
+    var pipelines = Pipeline.allFromCache(cache);
+    var policies = Policy.allFromCache(cache);
+    // var scopes = buildScopes(maps, pipelines, policies);
+    maps = maps.map(GatewayMap.getConfigFromData.bind(GatewayMap));
+    pipelines = pipelines.map(Pipeline.getConfigFromData.bind(Pipeline));
+    policies = policies.map(Policy.getConfigFromData.bind(Policy));
+    return {
+      maps: maps,
+      pipelines: pipelines,
+      policies: policies
+    };
+  }
+
 
   /**
    * Build a set of scopes from maps/pipelines/policies
@@ -26,7 +52,7 @@ module.exports = function(GatewayMap) {
             policy.scopes.forEach(function(s) {
               var routes = scopes[s];
               if (!routes) {
-                routes = []
+                routes = [];
                 scopes[s] = routes;
               }
               routes.push({verb: m.verb, endpoint: m.endpoint});
@@ -36,7 +62,7 @@ module.exports = function(GatewayMap) {
       });
     });
     return scopes;
-  }
+  };
 
   /**
    * Serialize the policy model instances to the JSON object for
@@ -46,6 +72,7 @@ module.exports = function(GatewayMap) {
    * @returns {ConfigFile}
    */
   GatewayMap.serialize = function(cache, facetName) {
+    var ConfigFile = GatewayMap.app.models.ConfigFile;
     var policyConfigPath = path.join(facetName, 'policy-config.json');
     var configs = loadFromCache(cache);
 
@@ -54,7 +81,7 @@ module.exports = function(GatewayMap) {
       path: policyConfigPath,
       data: configs
     });
-  }
+  };
 
   /**
    * Load the policy config from the file into cache.
@@ -63,6 +90,8 @@ module.exports = function(GatewayMap) {
    * @param configFile
    */
   GatewayMap.deserialize = function(cache, facetName, configFile) {
+    var Policy = GatewayMap.app.models.Policy;
+    var Pipeline = GatewayMap.app.models.Pipeline;
     var configs = configFile.data || {};
     configs.policies.forEach(function(p) {
       debug('loading [%s] policy into cache', p.name);
@@ -107,7 +136,7 @@ module.exports = function(GatewayMap) {
                 policy.scopes.forEach(function(s) {
                   var routes = scopes[s];
                   if (!routes) {
-                    routes = []
+                    routes = [];
                     scopes[s] = routes;
                   }
                   routes.push({verb: map.verb, endpoint: map.endpoint});
