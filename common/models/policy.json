@@ -3,7 +3,10 @@
   "base": "Definition",
   "idInjection": true,
   "options": {
-    "validateUpsert": true
+    "validateUpsert": true,
+    "memory": {
+      "collection": "Policy"
+    }
   },
   "properties": {
     "id": {

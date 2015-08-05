@@ -34,8 +34,13 @@ var givenEmptySandbox = function(cb) {
 };
 
 var resetWorkspace = function(cb) {
-  async.each(workspace.models(), function(model, cb) {
-    model.destroyAll(cb);
+  async.each(workspace.models(), function(model, done) {
+    if (typeof model.destroyAll === 'function') {
+      // Some workspace models are not attached to a DB
+      model.destroyAll(done);
+    } else {
+      done();
+    }
   }, cb);
 };
 

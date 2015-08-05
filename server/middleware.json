@@ -1,22 +1,2 @@
 {
-  "initial:before": {
-  },
-  "initial": {
-  },
-  "session": {
-  },
-  "auth": {
-  },
-  "parse": {
-  },
-  "routes": {
-  },
-  "files": {
-  },
-  "final": {
-    "loopback#urlNotFound": {}
-  },
-  "final:after": {
-    "errorhandler": {}
-  }
 }

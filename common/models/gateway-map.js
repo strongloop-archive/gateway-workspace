@@ -28,7 +28,6 @@ module.exports = function(GatewayMap) {
     };
   }
 
-
   /**
    * Build a set of scopes from maps/pipelines/policies
    * @param {GatewayMap[]) maps
@@ -111,7 +110,7 @@ module.exports = function(GatewayMap) {
    * Get the list of scope mappings
    * @param cb
    */
-  GatewayMap.getScopes = function(cb) {
+  GatewayMap.getAuthScopes = function(cb) {
     // Find referenced pipeline/policies of type `auth`
     GatewayMap.find({
       include: {
@@ -149,4 +148,20 @@ module.exports = function(GatewayMap) {
       cb(null, scopes);
     });
   };
+
+  GatewayMap.remoteMethod('getAuthScopes', {
+    isStatic: true,
+    accepts: [],
+    returns: [
+      {
+        arg: 'scopes',
+        type: 'object',
+        root: true
+      }
+    ],
+    http: {
+      verb: 'get',
+      path: '/authScopes'
+    }
+  });
 };

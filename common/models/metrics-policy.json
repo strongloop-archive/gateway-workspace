@@ -3,7 +3,15 @@
   "base": "Policy",
   "idInjection": true,
   "options": {
-    "validateUpsert": true
+    "validateUpsert": true,
+    "memory": {
+      "collection": "Policy"
+    },
+    "scope": {
+      "where": {
+        "type": "metrics"
+      }
+    }
   },
   "properties": {},
   "validations": [],
