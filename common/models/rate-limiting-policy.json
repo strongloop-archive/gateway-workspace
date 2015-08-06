@@ -1,0 +1,44 @@
+{
+  "name": "RateLimitingPolicy",
+  "base": "Policy",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "memory": {
+      "collection": "Policy"
+    },
+    "scope": {
+      "where": {
+        "type": "rateLimiting"
+      }
+    }
+  },
+  "properties": {
+    "interval": "number",
+    "limit": "number",
+    "perApp": {
+      "interval": "number",
+      "limit": "number"
+    },
+    "perIp": {
+      "interval": "number",
+      "limit": "number"
+    },
+    "perUrl": {
+      "interval": "number",
+      "limit": "number"
+    },
+    "perUser": {
+      "interval": "number",
+      "limit": "number"
+    },
+    "perAppAndUser": {
+      "interval": "number",
+      "limit": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

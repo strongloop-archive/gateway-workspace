@@ -1,0 +1,23 @@
+{
+  "name": "ReverseProxyPolicy",
+  "base": "Policy",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "memory": {
+      "collection": "Policy"
+    },
+    "scope": {
+      "where": {
+        "type": "reverseProxy"
+      }
+    }
+  },
+  "properties": {
+    "targetURL": "string"
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

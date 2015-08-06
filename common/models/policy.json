@@ -1,0 +1,31 @@
+{
+  "name": "Policy",
+  "base": "Definition",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "memory": {
+      "collection": "Policy"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "id": true,
+      "json": false
+    },
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "phase": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

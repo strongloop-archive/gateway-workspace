@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "loopback-workspace/common/models",
+      "../common/models",
+      "./models"
+    ]
+  },
+  "Policy": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Pipeline": {
+    "dataSource": "db",
+    "public": true
+  },
+  "GatewayMap": {
+    "dataSource": "db",
+    "public": true
+  },
+  "RateLimitingPolicy": {
+    "dataSource": "db",
+    "public": true
+  },
+  "MetricsPolicy": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ReverseProxyPolicy": {
+    "dataSource": "db",
+    "public": true
+  },
+  "AuthPolicy": {
+    "dataSource": "db",
+    "public": true
+  }
+}

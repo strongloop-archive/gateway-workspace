@@ -1,0 +1,27 @@
+{
+  "name": "AuthPolicy",
+  "base": "Policy",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "memory": {
+      "collection": "Policy"
+    },
+    "scope": {
+      "where": {
+        "type": "auth"
+      }
+    }
+  },
+  "properties": {
+    "scopes": {
+      "type": [
+        "string"
+      ]
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

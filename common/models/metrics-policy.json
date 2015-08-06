@@ -1,0 +1,21 @@
+{
+  "name": "MetricsPolicy",
+  "base": "Policy",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "memory": {
+      "collection": "Policy"
+    },
+    "scope": {
+      "where": {
+        "type": "metrics"
+      }
+    }
+  },
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}
