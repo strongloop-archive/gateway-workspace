@@ -67,7 +67,7 @@ var async = require('async');
 
 describe('Gateway Policies', function() {
   var ConfigFile = workspace.models.ConfigFile;
-  var GatewayMap = workspace.models.GatewayMap;
+  var GatewayMapping = workspace.models.GatewayMapping;
   var Pipeline = workspace.models.Pipeline;
   var Policy = workspace.models.Policy;
   var AuthPolicy = workspace.models.AuthPolicy;
@@ -110,7 +110,7 @@ describe('Gateway Policies', function() {
     });
   }
 
-  describe('create models for maps/pipelines/policies', function() {
+  describe('create models for mappings/pipelines/policies', function() {
     beforeEach(givenEmptyWorkspace);
     beforeEach(function(done) {
       var serverFacet = this.serverFacet;
@@ -120,7 +120,7 @@ describe('Gateway Policies', function() {
       async.series([
         createPoliciesAndPipelines,
         function(done) {
-          GatewayMap.create({
+          GatewayMapping.create({
             name: 'catalog',
             verb: 'GET',
             endpoint: '/api/catalog',
@@ -128,14 +128,14 @@ describe('Gateway Policies', function() {
           }, done);
         },
         function(done) {
-          GatewayMap.create({
+          GatewayMapping.create({
             name: 'invoice',
             verb: 'ALL',
             endpoint: '/api/invoices',
             pipelineId: 'default-pipeline'
           }, done);
         }, function(done) {
-          GatewayMap.create({
+          GatewayMapping.create({
             name: 'order',
             verb: 'ALL',
             endpoint: '/api/orders',
@@ -148,8 +148,8 @@ describe('Gateway Policies', function() {
       this.configFile.load(done);
     });
 
-    it('should be able to create multiple maps', function(done) {
-      GatewayMap.find(function(err, defs) {
+    it('should be able to create multiple mappings', function(done) {
+      GatewayMapping.find(function(err, defs) {
         if (err) return done(err);
         expect(defs).to.have.length(3);
         done();
@@ -173,7 +173,7 @@ describe('Gateway Policies', function() {
     });
 
     it('should be able to list scopes', function(done) {
-      GatewayMap.getAuthScopes(function(err, scopes) {
+      GatewayMapping.getAuthScopes(function(err, scopes) {
         if (err) return done(err);
         expect(scopes).to.eql({
             catalog: [{verb: 'GET', endpoint: '/api/catalog'},
@@ -198,18 +198,19 @@ describe('Gateway Policies', function() {
     });
 
     it('should be able to rename a pipeline', function(done) {
-      Pipeline.rename('default-pipeline', 'default-pipeline-1', function(err, pipeline) {
-        if (err) return done(err);
-        GatewayMap.find(function(err, defs) {
-          expect(defs).to.have.length(3);
-          defs.forEach(function(m) {
-            if (m.name !== 'order') {
-              expect(m.pipelineId).to.eql('default-pipeline-1');
-            }
+      Pipeline.rename('default-pipeline', 'default-pipeline-1',
+        function(err, pipeline) {
+          if (err) return done(err);
+          GatewayMapping.find(function(err, defs) {
+            expect(defs).to.have.length(3);
+            defs.forEach(function(m) {
+              if (m.name !== 'order') {
+                expect(m.pipelineId).to.eql('default-pipeline-1');
+              }
+            });
+            done();
           });
-          done();
         });
-      });
     });
 
   });

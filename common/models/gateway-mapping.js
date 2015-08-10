@@ -1,8 +1,8 @@
 var path = require('path');
 var debug = require('debug')('gateway-workspace:models:gateway-map');
 
-module.exports = function(GatewayMap) {
-  GatewayMap.getUniqueId = function(data) {
+module.exports = function(GatewayMapping) {
+  GatewayMapping.getUniqueId = function(data) {
     return data.name || data.id;
   };
 
@@ -11,33 +11,34 @@ module.exports = function(GatewayMap) {
    * @param cache
    */
   function loadFromCache(cache) {
-    var Pipeline = GatewayMap.app.models.Pipeline;
-    var Policy = GatewayMap.app.models.Policy;
+    var Pipeline = GatewayMapping.app.models.Pipeline;
+    var Policy = GatewayMapping.app.models.Policy;
 
-    var maps = GatewayMap.allFromCache(cache);
+    var mappings = GatewayMapping.allFromCache(cache);
     var pipelines = Pipeline.allFromCache(cache);
     var policies = Policy.allFromCache(cache);
-    // var scopes = buildScopes(maps, pipelines, policies);
-    maps = maps.map(GatewayMap.getConfigFromData.bind(GatewayMap));
+    // var scopes = buildScopes(mappings, pipelines, policies);
+    mappings = mappings.map(
+      GatewayMapping.getConfigFromData.bind(GatewayMapping));
     pipelines = pipelines.map(Pipeline.getConfigFromData.bind(Pipeline));
     policies = policies.map(Policy.getConfigFromData.bind(Policy));
     return {
-      maps: maps,
+      mappings: mappings,
       pipelines: pipelines,
       policies: policies
     };
   }
 
   /**
-   * Build a set of scopes from maps/pipelines/policies
-   * @param {GatewayMap[]) maps
+   * Build a set of scopes from mappings/pipelines/policies
+   * @param {GatewayMapping[]) mappings
    * @param {Pipeline[]) pipelines
    * @param {Policy[]) policies
    * @returns {{}}
    */
-  GatewayMap.buildScopes = function(maps, pipelines, policies) {
+  GatewayMapping.buildScopes = function(mappings, pipelines, policies) {
     var scopes = {};
-    maps.forEach(function(m) {
+    mappings.forEach(function(m) {
       var matchedPipelines = pipelines.filter(function(pipeline) {
         return m.pipelineId === pipeline.id;
       });
@@ -70,8 +71,8 @@ module.exports = function(GatewayMap) {
    * @param {String} facetName Facet name
    * @returns {ConfigFile}
    */
-  GatewayMap.serialize = function(cache, facetName) {
-    var ConfigFile = GatewayMap.app.models.ConfigFile;
+  GatewayMapping.serialize = function(cache, facetName) {
+    var ConfigFile = GatewayMapping.app.models.ConfigFile;
     var policyConfigPath = path.join(facetName, 'policy-config.json');
     var configs = loadFromCache(cache);
 
@@ -88,9 +89,9 @@ module.exports = function(GatewayMap) {
    * @param facetName
    * @param configFile
    */
-  GatewayMap.deserialize = function(cache, facetName, configFile) {
-    var Policy = GatewayMap.app.models.Policy;
-    var Pipeline = GatewayMap.app.models.Pipeline;
+  GatewayMapping.deserialize = function(cache, facetName, configFile) {
+    var Policy = GatewayMapping.app.models.Policy;
+    var Pipeline = GatewayMapping.app.models.Pipeline;
     var configs = configFile.data || {};
     configs.policies.forEach(function(p) {
       debug('loading [%s] policy into cache', p.name);
@@ -100,9 +101,9 @@ module.exports = function(GatewayMap) {
       debug('loading [%s] pipeline into cache', p.name);
       Pipeline.addToCache(cache, p);
     });
-    configs.maps.forEach(function(m) {
+    configs.mappings.forEach(function(m) {
       debug('loading [%s] map into cache', m.name);
-      GatewayMap.addToCache(cache, m);
+      GatewayMapping.addToCache(cache, m);
     });
   };
 
@@ -110,9 +111,9 @@ module.exports = function(GatewayMap) {
    * Get the list of scope mappings
    * @param cb
    */
-  GatewayMap.getAuthScopes = function(cb) {
+  GatewayMapping.getAuthScopes = function(cb) {
     // Find referenced pipeline/policies of type `auth`
-    GatewayMap.find({
+    GatewayMapping.find({
       include: {
         pipeline: {
           relation: 'policies',
@@ -123,10 +124,10 @@ module.exports = function(GatewayMap) {
           }
         }
       }
-    }, function(err, maps) {
+    }, function(err, mappings) {
       if (err) return cb(err);
       var scopes = {};
-      maps.forEach(function(m) {
+      mappings.forEach(function(m) {
         var map = m.toJSON();
         if (map.pipeline) {
           if (map.pipeline.policies) {
@@ -149,7 +150,7 @@ module.exports = function(GatewayMap) {
     });
   };
 
-  GatewayMap.remoteMethod('getAuthScopes', {
+  GatewayMapping.remoteMethod('getAuthScopes', {
     isStatic: true,
     accepts: [],
     returns: [

@@ -16,7 +16,7 @@
     "dataSource": "db",
     "public": true
   },
-  "GatewayMap": {
+  "GatewayMapping": {
     "dataSource": "db",
     "public": true
   },

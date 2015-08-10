@@ -1,5 +1,5 @@
 {
-  "name": "GatewayMap",
+  "name": "GatewayMapping",
   "base": "Definition",
   "idInjection": true,
   "options": {

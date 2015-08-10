@@ -6,23 +6,25 @@ module.exports = function(Pipeline) {
   };
 
   /**
-   * Find gateway maps that reference the given pipeline
+   * Find gateway mappings that reference the given pipeline
    * @param {String} name The pipeline name
    * @param cb
    */
   Pipeline.findMapRefs = function(name, cb) {
     Pipeline.findOne({where: {name: name}}, function(err, pipeline) {
       if (err) return cb(err);
-      var GatewayMap = Pipeline.app.models.GatewayMap;
-      GatewayMap.find({where: {pipelineId: pipeline.id}}, function(err, maps) {
+      var GatewayMapping = Pipeline.app.models.GatewayMapping;
+      GatewayMapping.find({where: {pipelineId: pipeline.id}},
+        function(err, mappings) {
         if (err) return cb(err);
-        cb(null, {pipeline: pipeline, maps: maps});
+        cb(null, {pipeline: pipeline, mappings: mappings});
       });
     });
   };
 
   /**
-   * Rename a pipeline and adjust the gateway maps that reference the pipeline
+   * Rename a pipeline and adjust the gateway mappings that reference
+   * the pipeline
    * @param {String} currentName Current name
    * @param {String} newName New Name
    * @param cb
@@ -35,10 +37,11 @@ module.exports = function(Pipeline) {
     }
     this.findMapRefs(currentName, function(err, result) {
       if (err) return cb(err);
-      result.pipeline.updateAttributes({name: newName}, function(err, pipeline) {
+      result.pipeline.updateAttributes({name: newName},
+        function(err, pipeline) {
         if (err) return cb(err);
         pipeline.id = Pipeline.getUniqueId(pipeline);
-        async.each(result.maps, function(map, done) {
+        async.each(result.mappings, function(map, done) {
           map.updateAttributes({pipelineId: pipeline.id}, done);
         }, function(err) {
           if (err) return cb(err);
