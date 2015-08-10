@@ -14,9 +14,7 @@ process.env.WORKSPACE_DIR = SANDBOX;
 function bootWorkspaceWithGateway() {
   var app = require('loopback-workspace');
 
-  boot(app, path.join(__dirname, '..', 'server'));
-  app.emit('ready');
-
+  require('../server/server')(app, {});
   return app;
 }
 
