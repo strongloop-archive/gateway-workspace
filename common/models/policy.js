@@ -12,7 +12,7 @@ module.exports = function(Policy) {
    */
   Policy.findPipelineRefs = function(name, cb) {
     Policy.findOne({where: {name: name}}, function(err, policy) {
-      if (err) return cb(err);
+      if (err || !policy) return cb(err);
       var Pipeline = Policy.app.models.Pipeline;
       Pipeline.find(function(err, pipelines) {
         if (err) return cb(err);
@@ -37,7 +37,7 @@ module.exports = function(Policy) {
       });
     }
     this.findPipelineRefs(currentName, function(err, result) {
-      if (err) return cb(err);
+      if (err || !result) return cb(err, false);
       var oldId = result.policy.id;
       result.policy.updateAttributes({name: newName}, function(err, policy) {
         if (err) return cb(err);
@@ -80,5 +80,74 @@ module.exports = function(Policy) {
         root: true
       }
     ]
+  });
+
+  /**
+   * Delete a policy by name
+   * @param {string} name Policy name
+   * @param {Boolean} force
+   * @param cb
+   */
+  Policy.deleteByName = function(name, force, cb) {
+    if (cb === undefined && typeof force === 'function') {
+      cb = force;
+      force = false;
+    }
+    this.findPipelineRefs(name, function(err, result) {
+      if (err) return cb(err, false);
+      if (!result) {
+        // Cannot find the policy by name
+        err = new Error('Policy not found: ' + name);
+        err.statusCode = 404;
+        cb(err);
+        return;
+      }
+      if (!force) {
+        if (Array.isArray(result.pipelines) && result.pipelines.length > 0) {
+          // Cannot delete the policy as it's in use
+          err = new Error('Policy cannot be deleted as it is in use');
+          err.statusCode = 400;
+          cb(err);
+          return;
+        }
+      }
+      async.each(result.pipelines, function(p, done) {
+        // Remove the policy ref
+        p.policies.remove(result.policy, done);
+      }, function(err) {
+        if (err) return cb(err);
+        result.policy.destroy(function(err) {
+          if (err) return cb(err);
+          cb(null, true);
+        });
+      });
+    });
+  };
+
+  Policy.remoteMethod('deleteByName', {
+    isStatic: true,
+    accepts: [{
+      arg: 'name',
+      type: 'string',
+      required: true,
+      http: {source: 'path'},
+      description: 'Policy name'
+    }, {
+      arg: 'force',
+      type: 'boolean',
+      http: {source: 'query'},
+      description: 'Force delete'
+    }],
+    returns: [
+      {
+        arg: 'result',
+        type: 'boolean',
+        root: true
+      }
+    ],
+    http: {
+      verb: 'delete',
+      path: '/names/:name'
+    }
   });
 };

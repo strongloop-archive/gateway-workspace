@@ -14,7 +14,7 @@ process.env.WORKSPACE_DIR = SANDBOX;
 function bootWorkspaceWithGateway() {
   var app = require('loopback-workspace');
 
-  require('../server/server')(app, {});
+  require('../server/index')(app, {});
   return app;
 }
 
@@ -209,6 +209,89 @@ describe('Gateway Policies', function() {
             done();
           });
         });
+    });
+
+    it('should be able to force delete a policy by name', function(done) {
+      Policy.deleteByName('auth-catalog', true, function(err, result) {
+        if (err) return done(err);
+        expect(result).to.equal(true);
+        Pipeline.find(function(err, defs) {
+          expect(defs).to.have.length(1);
+          expect(defs[0].policyIds).to.not.contain('auth-catalog');
+          done();
+        });
+      });
+    });
+
+    it('should not be able to delete a in-use policy by name', function(done) {
+      Policy.deleteByName('auth-catalog', false, function(err, result) {
+        expect(err).to.be.instanceof(Error);
+        expect(err.statusCode).to.eql(400);
+        Pipeline.find(function(err, defs) {
+          expect(defs).to.have.length(1);
+          expect(defs[0].policyIds).to.contain('auth-catalog');
+          done();
+        });
+      });
+    });
+
+    it('should report error if policy to be renamed not found', function(done) {
+      Policy.deleteByName('auth-catalog-xx', false, function(err, result) {
+        expect(err).to.be.instanceof(Error);
+        expect(err.statusCode).to.eql(404);
+        Pipeline.find(function(err, defs) {
+          expect(defs).to.have.length(1);
+          expect(defs[0].policyIds).to.contain('auth-catalog');
+          done();
+        });
+      });
+    });
+
+    it('should be able to force delete a pipeline by name', function(done) {
+      Pipeline.deleteByName('default-pipeline', true, function(err, result) {
+        if (err) return done(err);
+        expect(result).to.equal(true);
+        GatewayMapping.find(function(err, defs) {
+          expect(defs).to.have.length(3);
+          defs.forEach(function(m) {
+            expect(m.pipelineId).to.not.eql('default-pipeline');
+          });
+          done();
+        });
+      });
+    });
+
+    it('should not be able to delete a in-use pipeline by name',
+      function(done) {
+        Pipeline.deleteByName('default-pipeline', false, function(err, result) {
+          expect(err).to.be.instanceof(Error);
+          expect(err.statusCode).to.eql(400);
+          GatewayMapping.find(function(err, defs) {
+            expect(defs).to.have.length(3);
+            defs.forEach(function(m) {
+              if (m.name !== 'order') {
+                expect(m.pipelineId).to.eql('default-pipeline');
+              }
+            });
+            done();
+          });
+        });
+      });
+
+    it('should report error if pipeline to be renamed not found', function(done) {
+      Pipeline.deleteByName('default-pipeline-xx', false, function(err, result) {
+        expect(err).to.be.instanceof(Error);
+        expect(err.statusCode).to.eql(404);
+        GatewayMapping.find(function(err, defs) {
+          expect(defs).to.have.length(3);
+          defs.forEach(function(m) {
+            if (m.name !== 'order') {
+              expect(m.pipelineId).to.eql('default-pipeline');
+            }
+          });
+          done();
+        });
+      });
     });
 
   });

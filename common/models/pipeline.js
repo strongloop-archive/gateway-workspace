@@ -10,9 +10,9 @@ module.exports = function(Pipeline) {
    * @param {String} name The pipeline name
    * @param cb
    */
-  Pipeline.findMapRefs = function(name, cb) {
+  Pipeline.findMappingRefs = function(name, cb) {
     Pipeline.findOne({where: {name: name}}, function(err, pipeline) {
-      if (err) return cb(err);
+      if (err || !pipeline) return cb(err);
       var GatewayMapping = Pipeline.app.models.GatewayMapping;
       GatewayMapping.find({where: {pipelineId: pipeline.id}},
         function(err, mappings) {
@@ -35,8 +35,15 @@ module.exports = function(Pipeline) {
         cb(null, false);
       });
     }
-    this.findMapRefs(currentName, function(err, result) {
+    this.findMappingRefs(currentName, function(err, result) {
       if (err) return cb(err);
+      if (!result) {
+        // Cannot find the policy by name
+        err = new Error('Pipeline not found: ' + currentName);
+        err.statusCode = 404;
+        cb(err);
+        return;
+      }
       result.pipeline.updateAttributes({name: newName},
         function(err, pipeline) {
         if (err) return cb(err);
@@ -73,5 +80,74 @@ module.exports = function(Pipeline) {
         root: true
       }
     ]
+  });
+
+  /**
+   * Delete a pipeline by name
+   * @param {string} name Policy name
+   * @param {Boolean} force
+   * @param cb
+   */
+  Pipeline.deleteByName = function(name, force, cb) {
+    if (cb === undefined && typeof force === 'function') {
+      cb = force;
+      force = false;
+    }
+    this.findMappingRefs(name, function(err, result) {
+      if (err) return cb(err, false);
+      if (!result) {
+        // Cannot find the policy by name
+        err = new Error('Pipeline not found: ' + name);
+        err.statusCode = 404;
+        cb(err);
+        return;
+      }
+      if (!force) {
+        if (Array.isArray(result.mappings) && result.mappings.length > 0) {
+          // Cannot delete the policy as it's in use
+          err = new Error('Pipeline cannot be deleted as it is in use');
+          err.statusCode = 400;
+          cb(err);
+          return;
+        }
+      }
+      async.each(result.mappings, function(m, done) {
+        // Remove the policy ref
+        m.updateAttributes({pipelineId: null}, done);
+      }, function(err) {
+        if (err) return cb(err);
+        result.pipeline.destroy(function(err) {
+          if (err) return cb(err);
+          cb(null, true);
+        });
+      });
+    });
+  };
+
+  Pipeline.remoteMethod('deleteByName', {
+    isStatic: true,
+    accepts: [{
+      arg: 'name',
+      type: 'string',
+      required: true,
+      http: {source: 'path'},
+      description: 'Pipeline name'
+    }, {
+      arg: 'force',
+      type: 'boolean',
+      http: {source: 'query'},
+      description: 'Force delete'
+    }],
+    returns: [
+      {
+        arg: 'result',
+        type: 'boolean',
+        root: true
+      }
+    ],
+    http: {
+      verb: 'delete',
+      path: '/names/:name'
+    }
   });
 };
