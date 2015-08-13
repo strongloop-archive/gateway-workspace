@@ -1,5 +1,5 @@
 var path = require('path');
-var debug = require('debug')('gateway-workspace:models:gateway-map');
+var debug = require('debug')('gateway-workspace:models:gateway-mapping');
 
 module.exports = function(GatewayMapping) {
   GatewayMapping.getUniqueId = function(data) {
@@ -102,7 +102,7 @@ module.exports = function(GatewayMapping) {
       Pipeline.addToCache(cache, p);
     });
     configs.mappings.forEach(function(m) {
-      debug('loading [%s] map into cache', m.name);
+      debug('loading [%s] mapping into cache', m.name);
       GatewayMapping.addToCache(cache, m);
     });
   };
@@ -128,10 +128,10 @@ module.exports = function(GatewayMapping) {
       if (err) return cb(err);
       var scopes = {};
       mappings.forEach(function(m) {
-        var map = m.toJSON();
-        if (map.pipeline) {
-          if (map.pipeline.policies) {
-            map.pipeline.policies.forEach(function(policy) {
+        var mapping = m.toJSON();
+        if (mapping.pipeline) {
+          if (mapping.pipeline.policies) {
+            mapping.pipeline.policies.forEach(function(policy) {
               if (policy.scopes) {
                 policy.scopes.forEach(function(s) {
                   var routes = scopes[s];
@@ -139,7 +139,7 @@ module.exports = function(GatewayMapping) {
                     routes = [];
                     scopes[s] = routes;
                   }
-                  routes.push({verb: map.verb, endpoint: map.endpoint});
+                  routes.push({verb: mapping.verb, endpoint: mapping.endpoint});
                 });
               }
             });
