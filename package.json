@@ -1,6 +1,6 @@
 {
   "name": "gateway-workspace",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "server/index.js",
   "scripts": {
     "pretest": "jshint --exclude-path .gitignore .",
