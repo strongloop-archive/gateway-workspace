@@ -72,6 +72,9 @@ module.exports = function(GatewayMapping) {
    * @returns {ConfigFile}
    */
   GatewayMapping.serialize = function(cache, facetName) {
+    if (facetName !== 'server') {
+      return null;
+    }
     var ConfigFile = GatewayMapping.app.models.ConfigFile;
     var policyConfigPath = path.join(facetName, 'policy-config.json');
     var configs = loadFromCache(cache);
@@ -90,6 +93,9 @@ module.exports = function(GatewayMapping) {
    * @param configFile
    */
   GatewayMapping.deserialize = function(cache, facetName, configFile) {
+    if (facetName !== 'server') {
+      return;
+    }
     var Policy = GatewayMapping.app.models.Policy;
     var Pipeline = GatewayMapping.app.models.Pipeline;
     var configs = configFile.data || {};
