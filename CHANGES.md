@@ -1,3 +1,9 @@
+2015-08-20, Version 1.0.3
+=========================
+
+ * Handle missing properties (Raymond Feng)
+
+
 2015-08-14, Version 1.0.2
 =========================
 
