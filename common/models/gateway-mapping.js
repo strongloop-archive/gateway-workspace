@@ -38,6 +38,7 @@ module.exports = function(GatewayMapping) {
    */
   GatewayMapping.buildScopes = function(mappings, pipelines, policies) {
     var scopes = {};
+    mappings = mappings || [];
     mappings.forEach(function(m) {
       var matchedPipelines = pipelines.filter(function(pipeline) {
         return m.pipelineId === pipeline.id;
@@ -99,18 +100,24 @@ module.exports = function(GatewayMapping) {
     var Policy = GatewayMapping.app.models.Policy;
     var Pipeline = GatewayMapping.app.models.Pipeline;
     var configs = configFile.data || {};
-    configs.policies.forEach(function(p) {
-      debug('loading [%s] policy into cache', p.name);
-      Policy.addToCache(cache, p);
-    });
-    configs.pipelines.forEach(function(p) {
-      debug('loading [%s] pipeline into cache', p.name);
-      Pipeline.addToCache(cache, p);
-    });
-    configs.mappings.forEach(function(m) {
-      debug('loading [%s] mapping into cache', m.name);
-      GatewayMapping.addToCache(cache, m);
-    });
+    if (Array.isArray(configs.policies)) {
+      configs.policies.forEach(function(p) {
+        debug('loading [%s] policy into cache', p.name);
+        Policy.addToCache(cache, p);
+      });
+    }
+    if (Array.isArray(configs.pipelines)) {
+      configs.pipelines.forEach(function(p) {
+        debug('loading [%s] pipeline into cache', p.name);
+        Pipeline.addToCache(cache, p);
+      });
+    }
+    if (Array.isArray(configs.mappings)) {
+      configs.mappings.forEach(function(m) {
+        debug('loading [%s] mapping into cache', m.name);
+        GatewayMapping.addToCache(cache, m);
+      });
+    }
   };
 
   /**
@@ -133,6 +140,7 @@ module.exports = function(GatewayMapping) {
     }, function(err, mappings) {
       if (err) return cb(err);
       var scopes = {};
+      mappings = mappings || [];
       mappings.forEach(function(m) {
         var mapping = m.toJSON();
         if (mapping.pipeline) {
