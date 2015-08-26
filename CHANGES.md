@@ -1,4 +1,10 @@
-2015-08-20, Version 1.0.3
+2015-08-26, Version 1.0.4
+=========================
+
+ * Add GatewayMapping.rename() (Raymond Feng)
+
+
+2015-08-19, Version 1.0.3
 =========================
 
  * Handle missing properties (Raymond Feng)
