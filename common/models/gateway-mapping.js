@@ -179,4 +179,59 @@ module.exports = function(GatewayMapping) {
       path: '/authScopes'
     }
   });
+
+  /**
+   * Rename a mapping
+   * @param {String} currentName Current name
+   * @param {String} newName New Name
+   * @param cb
+   */
+  GatewayMapping.rename = function(currentName, newName, cb) {
+    if (currentName === newName) {
+      return process.nextTick(function() {
+        cb(null, false);
+      });
+    }
+    this.findOne({where: {name: currentName}}, function(err, result) {
+      if (err) return cb(err);
+      if (!result) {
+        // Cannot find the GatewayMapping by name
+        err = new Error('GatewayMapping not found: ' + currentName);
+        err.statusCode = 404;
+        cb(err);
+        return;
+      }
+      result.updateAttributes({name: newName},
+        function(err, mapping) {
+          if (err) return cb(err);
+          mapping.id = GatewayMapping.getUniqueId(mapping);
+          cb(null, mapping);
+        });
+    });
+  };
+
+  GatewayMapping.remoteMethod('rename', {
+    isStatic: true,
+    accepts: [{
+      arg: 'currentName',
+      type: 'string',
+      required: true,
+      description: 'Current name'
+    },
+      {
+        arg: 'newName',
+        type: 'string',
+        required: true,
+        description: 'New name'
+      }
+    ],
+    returns: [
+      {
+        arg: 'mapping',
+        type: 'GatewayMapping',
+        root: true
+      }
+    ]
+  });
 };
+

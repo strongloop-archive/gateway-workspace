@@ -154,6 +154,26 @@ describe('Gateway Policies', function() {
       });
     });
 
+    it('should be able to rename a mapping', function(done) {
+      GatewayMapping.rename('catalog', 'catalog-read',
+        function(err, mapping) {
+          if (err) return done(err);
+          GatewayMapping.find({where: {name: 'catalog-read'}},
+            function(err, defs) {
+              expect(defs).to.have.length(1);
+              GatewayMapping.find({where: {name: 'catalog'}},
+                function(err, defs) {
+                  expect(defs).to.have.length(0);
+                  GatewayMapping.find({where: {id: 'catalog-read'}},
+                    function(err, defs) {
+                      expect(defs).to.have.length(1);
+                      done();
+                    });
+                });
+            });
+        });
+    });
+
     it('should be able to create multiple policies', function(done) {
       Policy.find(function(err, defs) {
         if (err) return done(err);
