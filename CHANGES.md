@@ -1,3 +1,13 @@
+2016-05-06, Version 1.0.5
+=========================
+
+ * update copyright notices and license (Ryan Graham)
+
+ * Refer to licenses with a link (Sam Roberts)
+
+ * Use strongloop conventions for licensing (Sam Roberts)
+
+
 2015-08-26, Version 1.0.4
 =========================
 
