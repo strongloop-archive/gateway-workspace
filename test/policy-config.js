@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2015. All Rights Reserved.
+// Node module: gateway-workspace
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var fs = require('fs-extra');
 var loopback = require('loopback');
 var boot = require('loopback-boot');
